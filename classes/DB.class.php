@@ -1,13 +1,15 @@
 <?php
+include ('credential.php');
 
 class DB
 {
     private $con;
+    private $table='users';
 
     public function __construct()
     {
         try {
-            $this->con = new mysqli('localhost', 'root', '', 'maimt');
+            $this->con = new mysqli(SERVER,USERNAME,PASSWORD,DBNAME);
         } catch (Exception $e) {
             die($e->getMessage());
         }
@@ -56,7 +58,7 @@ class DB
             die($this->con->error);
         }
     }
-    public function delete($table,$conditions =[])
+    public function deletedata($table,$conditions =[])
     {
         $sql ="DELETE From $table";
         if(count($conditions))
@@ -71,7 +73,7 @@ class DB
                     $sql .= " AND ";
                 }
             }
-        }
+        }echo "$sql";
         $result =$this-> con->query($sql);
         if($result){
             echo "Deleted";
@@ -82,7 +84,7 @@ class DB
         }
     
 }
-public function update($table,$updateval=[],$conditions=[])
+public function updatedata($table,$updateval=[],$conditions=[])
 {
     $sql=" UPDATE ";
     $sql .="$table "."SET ";
@@ -117,6 +119,19 @@ public function update($table,$updateval=[],$conditions=[])
         die($this->con->error);
     }
 }
-    
-}
+public function insert($table,$column= [])
+{
+    $sql = "INSERT INTO ".$table ." (";            
+           $sql .= implode(",", array_keys($column)) . ') VALUES (';            
+           $sql .= "'" . implode("','", array_values($column)) . "')";  
+    echo "$sql";
+    $result =$this->con->query($sql);
+    if($result){
+        echo "Inserted Succesful  ";
+        return $result;
+    }else{
+        die($this->con->error);
+    }
 
+}
+}
